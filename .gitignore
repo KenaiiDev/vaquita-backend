@@ -1,0 +1,43 @@
+# dependencies
+/node_modules
+
+# testing
+/coverage
+.vitest/
+
+# production
+/dist/
+/build/
+
+# prisma
+/prisma/dev.db
+/prisma/dev.db-journal
+/prisma/migrations/
+
+/prisma/generated/
+
+# misc
+.DS_Store
+*.log
+*.tsbuildinfo
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files
+.env*
+.env.local
+.env.development
+.env.test
+.env.production
+
+# docker
+/docker-compose.override.yml
+/docker-compose.dev.yml
+
+# editor config
+.vscode/
+.idea/
