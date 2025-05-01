@@ -1,6 +1,6 @@
 import { expect, vi, it, describe, beforeEach } from "vitest";
 import { eventService } from "@/events/event.service";
-import { CreateEventDto, Event } from "@/events/event.types";
+import { CreateEventDto, Event, UpdateEventDto } from "@/events/event.types";
 import prisma from "@/shared/libs/__mocks__/prismaClient";
 
 vi.mock("@/shared/libs/prismaClient");

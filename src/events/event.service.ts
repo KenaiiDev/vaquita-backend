@@ -1,10 +1,39 @@
 import prismaClient from "@/shared/libs/prismaClient";
-import { CreateEventDto } from "./event.types";
+import { CreateEventDto, EventId, UpdateEventDto } from "./event.types";
 
 export const eventService = {
-  create: async (body: CreateEventDto) => {
+  create: async (data: CreateEventDto) => {
     return await prismaClient.event.create({
-      data: body,
+      data,
+    });
+  },
+
+  findAll: async () => {
+    return await prismaClient.event.findMany({});
+  },
+
+  findById: async (id: EventId) => {
+    return await prismaClient.event.findUnique({
+      where: {
+        id,
+      },
+    });
+  },
+
+  update: async (id: EventId, data: UpdateEventDto) => {
+    return prismaClient.event.update({
+      where: {
+        id,
+      },
+      data,
+    });
+  },
+
+  delete: async (id: EventId) => {
+    return await prismaClient.event.delete({
+      where: {
+        id,
+      },
     });
   },
 };
