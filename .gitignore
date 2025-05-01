@@ -5,6 +5,9 @@
 /coverage
 .vitest/
 
+# prisma client
+/generated/prisma/
+
 # production
 /dist/
 /build/

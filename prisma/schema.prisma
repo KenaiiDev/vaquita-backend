@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  date DateTime @db.Date
+  name String
+
+  members     Member[]
+  expenses    Expense[]
+  settlements Settlement[]
+
+  createdAt DateTime @default(now()) @db.Date
+  updatedAt DateTime @default(now()) @db.Date
+
+  @@map("events") // Cambiar a plural
+}
+
+model Member {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  eventId String @db.ObjectId
+
+  event               Event        @relation(fields: [eventId], references: [id])
+  expenses            Expense[]
+  payerSettlements    Settlement[] @relation(name: "PayerSettlements")
+  receiverSettlements Settlement[] @relation(name: "ReceiverSettlements")
+
+  createdAt DateTime @default(now()) @db.Date
+  updatedAt DateTime @default(now()) @db.Date
+
+  @@map("members") // Añadir mapeo a colección plural y minúscula
+}
+
+model Expense {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  amount      Float
+  category    String
+  description String
+  eventId     String @db.ObjectId
+  memberId    String @db.ObjectId
+
+  event  Event  @relation(fields: [eventId], references: [id])
+  member Member @relation(fields: [memberId], references: [id])
+
+  createdAt DateTime @default(now()) @db.Date
+  updatedAt DateTime @default(now()) @db.Date
+
+  @@map("expenses") // Añadir mapeo a colección plural y minúscula
+}
+
+model Settlement {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  amount     Float
+  eventId    String @db.ObjectId
+  payerId    String @db.ObjectId
+  receiverId String @db.ObjectId
+
+  event    Event  @relation(fields: [eventId], references: [id])
+  payer    Member @relation(name: "PayerSettlements", fields: [payerId], references: [id])
+  receiver Member @relation(name: "ReceiverSettlements", fields: [receiverId], references: [id])
+
+  createdAt DateTime @default(now()) @db.Date
+  updatedAt DateTime @default(now()) @db.Date
+
+  @@map("settlements") // Añadir mapeo a colección plural y minúscula
+}
