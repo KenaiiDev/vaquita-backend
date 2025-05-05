@@ -1,12 +1,15 @@
 import { eventService } from "@/events/event.service";
 import { httpResponse } from "@/shared/libs/httpResponse";
-
-import type { Request, Response, NextFunction } from "express";
-import type { CreateEventDto, UpdateEventDto } from "./event.types";
+import type { Request, NextFunction } from "express";
+import type { CreateEventDto, UpdateEventDto, Event } from "./event.types";
+import type {
+  CustomResponseData,
+  CustomResponseMessage,
+} from "@/shared/types/response.types";
 
 const createEvent = async (
   req: Request<unknown, unknown, CreateEventDto>,
-  res: Response,
+  res: CustomResponseData<Event>,
   next: NextFunction
 ) => {
   try {
@@ -20,16 +23,19 @@ const createEvent = async (
 
 const getEventById = async (
   req: Request<{ id: string }>,
-  res: Response,
+  res: CustomResponseMessage | CustomResponseData<Event>,
   next: NextFunction
 ) => {
   try {
     const { id } = req.params;
     const event = await eventService.getById(id);
     if (!event) {
-      return httpResponse.NOT_FOUND(res, "Event not found");
+      return httpResponse.NOT_FOUND(
+        res as CustomResponseMessage,
+        "Event not found"
+      );
     }
-    return httpResponse.OK(res, event);
+    return httpResponse.OK(res as CustomResponseData<Event>, event);
   } catch (error) {
     next(error);
   }
@@ -37,7 +43,7 @@ const getEventById = async (
 
 const getAllEvents = async (
   req: Request,
-  res: Response,
+  res: CustomResponseData<Event[]>,
   next: NextFunction
 ) => {
   try {
@@ -50,7 +56,7 @@ const getAllEvents = async (
 
 const updateEvent = async (
   req: Request<{ id: string }, unknown, UpdateEventDto>,
-  res: Response,
+  res: CustomResponseMessage | CustomResponseData<Event>,
   next: NextFunction
 ) => {
   try {
@@ -58,9 +64,12 @@ const updateEvent = async (
     const { body } = req;
     const updatedEvent = await eventService.update(id, body);
     if (!updatedEvent) {
-      return httpResponse.NOT_FOUND(res, "Event not found");
+      return httpResponse.NOT_FOUND(
+        res as CustomResponseMessage,
+        "Event not found"
+      );
     }
-    return httpResponse.OK(res, updatedEvent);
+    return httpResponse.OK(res as CustomResponseData<Event>, updatedEvent);
   } catch (error) {
     next(error);
   }
@@ -68,7 +77,7 @@ const updateEvent = async (
 
 const deleteEvent = async (
   req: Request<{ id: string }>,
-  res: Response,
+  res: CustomResponseMessage,
   next: NextFunction
 ) => {
   try {

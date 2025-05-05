@@ -229,7 +229,7 @@ describe("Event controller", () => {
         }) as Request<{ id: string }, unknown, unknown>;
 
         const res =
-          httpMocks.createResponse() as unknown as CustomResponseData<Event>;
+          httpMocks.createResponse() as unknown as CustomResponseMessage;
         const next = vi.fn() as NextFunction;
 
         eventService.delete.mockResolvedValue(deletedEvent);
