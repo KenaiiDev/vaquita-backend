@@ -58,7 +58,7 @@ describe("Event service", () => {
   describe("findAll method", () => {
     it("Should return an empty array if no events exist", async () => {
       prisma.event.findMany.mockResolvedValue([]);
-      const events = await eventService.findAll();
+      const events = await eventService.getAll();
       expect(prisma.event.findMany).toHaveBeenCalled();
       expect(events).toEqual([]);
     });
@@ -66,7 +66,7 @@ describe("Event service", () => {
     it("Should return an array of events", async () => {
       const mockedEvents = [createMockEvent("1"), createMockEvent("2")];
       prisma.event.findMany.mockResolvedValue(mockedEvents);
-      const events = await eventService.findAll();
+      const events = await eventService.getAll();
       expect(prisma.event.findMany).toHaveBeenCalled();
       expect(events).toEqual(mockedEvents);
     });
@@ -74,7 +74,7 @@ describe("Event service", () => {
     it("Should throw an error if prisma findMany fails", async () => {
       const mockedError = new Error("Database findMany error");
       prisma.event.findMany.mockRejectedValue(mockedError);
-      await expect(eventService.findAll()).rejects.toThrow(mockedError);
+      await expect(eventService.getAll()).rejects.toThrow(mockedError);
       expect(prisma.event.findMany).toHaveBeenCalled();
     });
   });
@@ -85,7 +85,7 @@ describe("Event service", () => {
     it("Should return the event if found", async () => {
       const mockedEvent = createMockEvent(eventId);
       prisma.event.findUnique.mockResolvedValue(mockedEvent);
-      const event = await eventService.findById(eventId);
+      const event = await eventService.getById(eventId);
       expect(prisma.event.findUnique).toHaveBeenCalledWith({
         where: { id: eventId },
       });
@@ -94,7 +94,7 @@ describe("Event service", () => {
 
     it("Should return null if event not found", async () => {
       prisma.event.findUnique.mockResolvedValue(null);
-      const event = await eventService.findById(eventId);
+      const event = await eventService.getById(eventId);
       expect(prisma.event.findUnique).toHaveBeenCalledWith({
         where: { id: eventId },
       });
@@ -104,7 +104,7 @@ describe("Event service", () => {
     it("Should throw an error if prisma findUnique fails", async () => {
       const mockedError = new Error("Database findUnique error");
       prisma.event.findUnique.mockRejectedValue(mockedError);
-      await expect(eventService.findById(eventId)).rejects.toThrow(mockedError);
+      await expect(eventService.getById(eventId)).rejects.toThrow(mockedError);
       expect(prisma.event.findUnique).toHaveBeenCalledWith({
         where: { id: eventId },
       });
