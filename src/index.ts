@@ -1,12 +1,21 @@
-import express from "express";
+import cors from "cors";
+import express, { type Express } from "express";
 
-const app = express();
-const port = 3000;
+import { eventRouter } from "@/events/event.routes";
+import { errorHandler } from "./shared/middlewares/errorHandler";
 
-app.get("/", (req: express.Request, res: express.Response) => {
-  res.send("Hello, World!");
+const app: Express = express();
+app.use(cors());
+app.use(express.json());
+
+app.use("/app/event", eventRouter);
+
+app.use(errorHandler);
+
+const PORT = process.env.PORT ?? "3000";
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+export default app;
