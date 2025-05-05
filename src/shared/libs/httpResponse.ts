@@ -7,6 +7,7 @@ import {
 enum HttpStatus {
   OK = 200,
   CREATED = 201,
+  NO_CONTENT = 204,
   BAD_REQUEST = 400,
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
@@ -30,7 +31,9 @@ export const httpResponse = {
       data,
     });
   },
-
+  NO_CONTENT: (res: CustomResponseMessage) => {
+    return res.status(HttpStatus.NO_CONTENT).send();
+  },
   BAD_REQUEST: <ErrorType>(
     res: CustomResponseMessageError<ErrorType>,
     message: string,

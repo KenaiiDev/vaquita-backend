@@ -8,11 +8,11 @@ export const eventService = {
     });
   },
 
-  findAll: async () => {
+  getAll: async () => {
     return await prismaClient.event.findMany({});
   },
 
-  findById: async (id: EventId) => {
+  getById: async (id: EventId) => {
     return await prismaClient.event.findUnique({
       where: {
         id,
