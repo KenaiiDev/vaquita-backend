@@ -2,6 +2,7 @@ import { expect, describe, vi, beforeEach, afterEach, it } from "vitest";
 import httpMocks from "node-mocks-http";
 
 import { memberService } from "@/members/__mocks__/member.service";
+import { eventService } from "@/events/__mocks__/event.service";
 import { httpResponse } from "@/shared/libs/__mocks__/httpResponse";
 
 import {
@@ -21,6 +22,7 @@ import {
 
 vi.mock("@/shared/libs/httpResponse");
 vi.mock("@/members/member.service");
+vi.mock("@/events/event.service");
 
 describe("Member controller", () => {
   const mockDate = new Date("2025-05-04T12:00:00Z");
@@ -128,6 +130,13 @@ describe("Member controller", () => {
           updatedAt: mockDate,
         },
       ];
+      const mockedEvent = {
+        name: "event1",
+        id: eventId,
+        date: mockDate,
+        createdAt: mockDate,
+        updatedAt: mockDate,
+      };
 
       const req = httpMocks.createRequest({
         method: "GET",
@@ -140,7 +149,8 @@ describe("Member controller", () => {
       >;
       const next = vi.fn() as NextFunction;
 
-      memberService.getByEventId.mockResolvedValue(members);
+      eventService.getById.mockResolvedValue(mockedEvent);
+      memberService.getByEventIdOrThrow.mockResolvedValue(members);
 
       const mockHttpResponse =
         httpMocks.createResponse() as unknown as CustomResponseData<unknown>;
@@ -148,7 +158,7 @@ describe("Member controller", () => {
 
       const result = await getMembersByEvent(req, res, next);
 
-      expect(memberService.getByEventId).toHaveBeenCalledWith(eventId);
+      expect(memberService.getByEventIdOrThrow).toHaveBeenCalledWith(eventId);
       expect(httpResponse.OK).toHaveBeenCalledWith(res, members);
       expect(result).toBe(mockHttpResponse);
     });

@@ -6,6 +6,7 @@ import type {
   UpdateMemberDto,
 } from "@/members/member.types";
 import prisma from "@/shared/libs/__mocks__/prismaClient";
+import { Event } from "@/events/event.types";
 
 vi.mock("@/shared/libs/prismaClient");
 
@@ -76,13 +77,21 @@ describe("Member Service", () => {
   describe("findAll method", () => {
     it("Should return all members for a given eventId", async () => {
       const eventId = "event1";
+      const mockedEvent: Event = {
+        id: eventId,
+        date: new Date(),
+        name: "Event1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
       const mockedMembers = [
         createMockMember("member1", { eventId }),
         createMockMember("member2", { eventId }),
       ];
       prisma.member.findMany.mockResolvedValue(mockedMembers);
+      prisma.event.findUnique.mockResolvedValue(mockedEvent);
 
-      const members = await memberService.getAll(eventId);
+      const members = await memberService.getByEventIdOrThrow(eventId);
 
       expect(prisma.member.findMany).toHaveBeenCalledWith({
         where: { eventId },
@@ -93,14 +102,37 @@ describe("Member Service", () => {
 
     it("Should return an empty array if no members found for the eventId", async () => {
       const eventId = "eventWithNoMembers";
+      const mockedEvent: Event = {
+        id: eventId,
+        date: new Date(),
+        name: "Event1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
       prisma.member.findMany.mockResolvedValue([]);
+      prisma.event.findUnique.mockResolvedValue(mockedEvent);
 
-      const members = await memberService.getAll(eventId);
+      const members = await memberService.getByEventIdOrThrow(eventId);
 
       expect(prisma.member.findMany).toHaveBeenCalledWith({
         where: { eventId },
       });
       expect(members).toStrictEqual([]);
+    });
+
+    it("Should throw an error if no event found", async () => {
+      const eventId = "noEvent";
+      prisma.event.findUnique.mockResolvedValue(null);
+
+      await expect(memberService.getByEventIdOrThrow(eventId)).rejects.toThrow(
+        "Event not found"
+      );
+
+      expect(prisma.event.findUnique).toHaveBeenCalledWith({
+        where: { id: eventId },
+      });
+
+      expect(prisma.member.findMany).not.toHaveBeenCalled();
     });
   });
 

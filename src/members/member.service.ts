@@ -1,6 +1,7 @@
 import prismaClient from "@/shared/libs/prismaClient";
 import { CreateMemberDto, MemberId, UpdateMemberDto } from "./member.types";
 import { EventId } from "@/events/event.types";
+import { eventService } from "@/events/event.service";
 
 export const memberService = {
   create: async (data: CreateMemberDto) => {
@@ -9,10 +10,12 @@ export const memberService = {
     });
   },
 
-  getByEventId: async (event: EventId) => {
+  getByEventIdOrThrow: async (eventId: EventId) => {
+    const event = await eventService.getById(eventId);
+    if (!event) throw new Error("Event not found");
     return await prismaClient.member.findMany({
       where: {
-        eventId: event,
+        eventId,
       },
     });
   },
